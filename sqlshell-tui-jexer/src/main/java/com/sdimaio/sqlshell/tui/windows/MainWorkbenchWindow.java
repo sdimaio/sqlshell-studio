@@ -1,5 +1,7 @@
 package com.sdimaio.sqlshell.tui.windows;
 
+import com.sdimaio.sqlshell.core.connection.ConnectionProfileRepository;
+import com.sdimaio.sqlshell.core.connection.ConnectionService;
 import jexer.TAction;
 import jexer.TApplication;
 import jexer.TWindow;
@@ -7,21 +9,47 @@ import jexer.TWindow;
 /**
  * Initial workbench shell for SQLShell Studio.
  *
- * <p>This first version is intentionally modest: it anchors the application
- * layout and user workflow before the real JDBC-backed panels are connected.
+ * <p>This window intentionally starts small. The first objective is to expose a
+ * coherent workbench entry point and one complete vertical slice, not to fake a
+ * full IDE before the underlying services exist.
+ *
+ * @author sdimaio
  */
 public final class MainWorkbenchWindow extends TWindow {
 
-    public MainWorkbenchWindow(final TApplication application) {
+    /**
+     * Repository used by the connection manager workflow.
+     */
+    private final ConnectionProfileRepository profileRepository;
+
+    /**
+     * Service used to validate and open JDBC sessions.
+     */
+    private final ConnectionService connectionService;
+
+    /**
+     * Creates the main workbench window.
+     *
+     * @param application parent Jexer application.
+     * @param profileRepository profile repository.
+     * @param connectionService connection service.
+     */
+    public MainWorkbenchWindow(final TApplication application,
+                               final ConnectionProfileRepository profileRepository,
+                               final ConnectionService connectionService) {
         super(application, "SQLShell Studio", 1, 1, 86, 26, RESIZABLE);
+        this.profileRepository = profileRepository;
+        this.connectionService = connectionService;
 
         addLabel("Shell-native JDBC workbench", 2, 1);
-        addLabel("This is the initial workbench placeholder.", 2, 2);
+        addLabel("The first implementation slice focuses on connection management.", 2, 2);
 
         addButton("Connections", 2, 5, new TAction() {
             @Override
             public void DO() {
-                messageBox("Connections", "Connection manager is not implemented yet.");
+                new ConnectionManagerWindow(getApplication(),
+                    MainWorkbenchWindow.this.profileRepository,
+                    MainWorkbenchWindow.this.connectionService);
             }
         });
 

@@ -4,10 +4,18 @@ import com.sdimaio.sqlshell.core.query.QueryExecutionService;
 import com.sdimaio.sqlshell.core.query.QueryRequest;
 import com.sdimaio.sqlshell.core.query.QueryResult;
 import com.sdimaio.sqlshell.core.session.DatabaseSession;
+
 import java.util.List;
 
 /**
  * Placeholder query execution service.
+ *
+ * <p>The class exists to keep module boundaries honest while the first vertical
+ * slice focuses on connection management. Returning a deterministic placeholder
+ * is preferable to leaving the type absent and letting ad-hoc UI logic leak
+ * directly into the JDBC layer later.
+ *
+ * @author sdimaio
  */
 public final class JdbcQueryExecutionService implements QueryExecutionService {
 

@@ -5,6 +5,12 @@ import com.sdimaio.sqlshell.core.dialect.DatabaseDialect;
 
 /**
  * Minimal Oracle dialect scaffold.
+ *
+ * <p>Oracle deserves an explicit dialect even in the first revision because its
+ * baseline test query and identifier conventions differ from the generic SQL
+ * assumptions used by PostgreSQL-style engines.
+ *
+ * @author sdimaio
  */
 public final class OracleDialect implements DatabaseDialect {
 

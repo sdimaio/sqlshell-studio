@@ -5,6 +5,12 @@ import java.util.Map;
 
 /**
  * Immutable outcome of a query execution request.
+ *
+ * <p>The result intentionally supports both row-returning and update-count
+ * scenarios. The shape is broad enough for the first UI implementation while
+ * remaining compact enough to serialize, log, or export without UI coupling.
+ *
+ * @author sdimaio
  */
 public record QueryResult(
     QueryMode executionMode,
@@ -19,9 +25,9 @@ public record QueryResult(
 ) {
 
     /**
-     * Returns true when the result completed without a recorded error.
+     * Returns whether the execution completed without a recorded error.
      *
-     * @return true when the execution succeeded from the caller point of view.
+     * @return true when the caller can treat the execution as successful.
      */
     public boolean successful() {
         return error == null;

@@ -5,6 +5,12 @@ import com.sdimaio.sqlshell.core.dialect.DatabaseDialect;
 
 /**
  * Minimal PostgreSQL dialect scaffold.
+ *
+ * <p>PostgreSQL is a first-class target of the initial roadmap, so the dialect
+ * is introduced immediately even though its current implementation remains
+ * intentionally small.
+ *
+ * @author sdimaio
  */
 public final class PostgresDialect implements DatabaseDialect {
 

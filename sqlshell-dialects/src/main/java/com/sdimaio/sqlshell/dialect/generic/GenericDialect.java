@@ -5,6 +5,12 @@ import com.sdimaio.sqlshell.core.dialect.DatabaseDialect;
 
 /**
  * Safe fallback dialect for unsupported or not-yet-specialized databases.
+ *
+ * <p>The generic dialect exists to keep the system operational even when a
+ * connection profile targets a database family for which no optimized dialect
+ * has been implemented yet.
+ *
+ * @author sdimaio
  */
 public final class GenericDialect implements DatabaseDialect {
 
