@@ -61,7 +61,8 @@ select_java_home() {
       echo "${JAVA_HOME}"
       return 0
     fi
-    log "Ignoring JAVA_HOME=${JAVA_HOME} because it points to Java ${major:-unknown}, not Java ${REQUIRED_JAVA_MAJOR}."
+    printf '[build] Ignoring JAVA_HOME=%s because it points to Java %s, not Java %s.\n' \
+      "${JAVA_HOME}" "${major:-unknown}" "${REQUIRED_JAVA_MAJOR}" >&2
   fi
 
   if [[ -x "${DEFAULT_JAVA_HOME}/bin/java" ]]; then
