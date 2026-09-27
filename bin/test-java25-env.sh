@@ -2,11 +2,15 @@
 
 set -euo pipefail
 
-JAVA_BIN="${JAVA_HOME:-/usr/lib/jvm/jdk-25.0.1}/bin/java"
+JAVA_CMD="$(command -v java || true)"
 MVN_BIN="$(command -v mvn || true)"
 
-if [[ ! -x "${JAVA_BIN}" ]]; then
-  echo "[env] Java binary not found at ${JAVA_BIN}" >&2
+if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]]; then
+  JAVA_BIN="${JAVA_HOME}/bin/java"
+elif [[ -n "${JAVA_CMD}" ]]; then
+  JAVA_BIN="${JAVA_CMD}"
+else
+  echo "[env] No java executable found in JAVA_HOME or PATH" >&2
   exit 1
 fi
 

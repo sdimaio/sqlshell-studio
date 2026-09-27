@@ -17,9 +17,26 @@ fail() {
 
 java_major_of() {
   local java_bin="$1"
-  local raw major
+  local raw=""
+  local major=""
 
-  raw="$(${java_bin} -version 2>&1 | awk -F '"' '/version/ {print $2; exit}')"
+  if [[ ! -x "${java_bin}" ]]; then
+    echo ""
+    return 0
+  fi
+
+  raw="$(${java_bin} -XshowSettings:properties -version 2>&1 \
+    | awk -F'= ' '/java\.specification\.version =/ {gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2); print $2; exit}')"
+
+  if [[ -z "${raw}" ]]; then
+    raw="$(${java_bin} -version 2>&1 \
+      | awk -F '"' '/version/ {print $2; exit}')"
+  fi
+
+  if [[ -z "${raw}" ]]; then
+    raw="$(${java_bin} -version 2>&1 | grep -Eo '[0-9]+(\.[0-9]+)?' | head -1 || true)"
+  fi
+
   if [[ -z "${raw}" ]]; then
     echo ""
     return 0
@@ -36,7 +53,7 @@ java_major_of() {
 }
 
 select_java_home() {
-  local candidate major
+  local candidate major java_cmd
 
   if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]]; then
     major="$(java_major_of "${JAVA_HOME}/bin/java")"
@@ -51,6 +68,16 @@ select_java_home() {
     major="$(java_major_of "${DEFAULT_JAVA_HOME}/bin/java")"
     if [[ "${major}" == "${REQUIRED_JAVA_MAJOR}" ]]; then
       echo "${DEFAULT_JAVA_HOME}"
+      return 0
+    fi
+  fi
+
+  java_cmd="$(command -v java || true)"
+  if [[ -n "${java_cmd}" ]]; then
+    major="$(java_major_of "${java_cmd}")"
+    if [[ "${major}" == "${REQUIRED_JAVA_MAJOR}" ]]; then
+      candidate="$(cd "$(dirname "${java_cmd}")/.." && pwd)"
+      echo "${candidate}"
       return 0
     fi
   fi
