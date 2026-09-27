@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.sdimaio</groupId>
+        <artifactId>sqlshell-studio</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>sqlshell-tui-jexer</artifactId>
+    <name>sqlshell-tui-jexer</name>
+    <description>Jexer-based TUI layer for SQLShell Studio.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sdimaio</groupId>
+            <artifactId>sqlshell-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sdimaio</groupId>
+            <artifactId>sqlshell-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sdimaio</groupId>
+            <artifactId>sqlshell-dialects</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.gitlab.autumnmeowmeow</groupId>
+            <artifactId>jexer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

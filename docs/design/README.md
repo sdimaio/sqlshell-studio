@@ -14,6 +14,7 @@ This folder contains reusable engineering and delivery standards derived from th
 - `en/DELIVERY_STYLE_STANDARD.md`
 - `en/JAVA25_MULTIMODULE_DELIVERY_BLUEPRINT.md`
 - `en/BRANCHING_AND_RELEASE_MODEL.md`
+- `en/IMPLEMENTATION_SEQUENCE.md`
 
 ## Italiano
 
@@ -24,6 +25,7 @@ This folder contains reusable engineering and delivery standards derived from th
 - `it/DELIVERY_STYLE_STANDARD.md`
 - `it/JAVA25_MULTIMODULE_DELIVERY_BLUEPRINT.md`
 - `it/BRANCHING_AND_RELEASE_MODEL.md`
+- `it/IMPLEMENTATION_SEQUENCE.md`
 
 ## Intent
 

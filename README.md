@@ -9,32 +9,36 @@ It is designed for:
 - keyboard-first workflows
 - developers and DBAs who want a richer experience than plain SQL shells
 
-The project vision is inspired by tools like:
+The project vision is inspired by:
 
 - Oracle SQL Developer
 - Toad
 - terminal-first operational workflows
 
-## Goals
+## Current Status
 
-- multi-database JDBC connectivity
-- professional TUI built with Jexer
-- schema browser
-- SQL editor
-- result grid
-- query history
-- export utilities
-- dialect-aware behavior for Oracle, PostgreSQL, and more
+Architecture, delivery standards, and the first multi-module Maven scaffold are now in place.
+
+## Module Layout
+
+- `sqlshell-core` — domain model and service contracts
+- `sqlshell-jdbc` — JDBC implementation layer
+- `sqlshell-dialects` — Oracle/PostgreSQL/generic dialect layer
+- `sqlshell-tui-jexer` — Jexer-based TUI layer
+- `sqlshell-app` — bootstrap application
 
 ## Documentation
 
+### Guides
+
 See:
+- `docs/guides/README.md`
 
-- `docs/guides/DB_TUI_ARCHITECTURE.md`
-- `docs/guides/JEXER_DEVELOPMENT_GUIDE.md`
-- `docs/guides/JEXER_COMPONENT_REFERENCE.md`
-- `docs/guides/JEXER_COOKBOOK.md`
+### Design
 
-## Status
+See:
+- `docs/design/README.md`
 
-Project bootstrap / architecture phase.
+## Build Note
+
+The repository is intentionally pinned to **Java 25**. Building it with older JDKs will fail by design.
