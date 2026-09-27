@@ -13,6 +13,7 @@ La regola primaria è semplice:
 ```text
 sqlshell-studio/
   docs/
+  sqlshell-kernel/
   sqlshell-core/
   sqlshell-jdbc/
   sqlshell-dialects/
@@ -25,7 +26,31 @@ sqlshell-studio/
 
 ## 2. Responsabilità dei Moduli
 
-### 2.1 `sqlshell-core`
+### 2.1 `sqlshell-kernel`
+
+Scopo:
+- modello runtime e piattaforma di basso livello
+- rilevamento OS e JVM
+- diagnostica di bootstrap dell'ambiente
+- futura casa per startup guards professionali
+
+Deve contenere:
+- nessuna classe UI
+- nessuna logica JDBC
+- dipendenze minime
+
+Package tipici:
+
+```text
+com.sdimaio.sqlshell.kernel.model.system
+com.sdimaio.sqlshell.kernel.model.system.os
+com.sdimaio.sqlshell.kernel.model.system.runtime
+com.sdimaio.sqlshell.kernel.model.system.architecture
+```
+
+---
+
+## 2.2 `sqlshell-core`
 
 Scopo:
 - modello di dominio stabile
@@ -52,7 +77,7 @@ com.sdimaio.sqlshell.core.export
 
 ---
 
-### 2.2 `sqlshell-jdbc`
+### 2.3 `sqlshell-jdbc`
 
 Scopo:
 - implementazione JDBC dei servizi di sessione e query
@@ -76,7 +101,7 @@ com.sdimaio.sqlshell.jdbc.mapping
 
 ---
 
-### 2.3 `sqlshell-dialects`
+### 2.4 `sqlshell-dialects`
 
 Scopo:
 - logica SQL e metadata specifica per vendor
@@ -100,7 +125,7 @@ com.sdimaio.sqlshell.dialect.generic
 
 ---
 
-### 2.4 `sqlshell-tui-jexer`
+### 2.5 `sqlshell-tui-jexer`
 
 Scopo:
 - tutto il codice UI Jexer
@@ -127,7 +152,7 @@ com.sdimaio.sqlshell.tui.models
 
 ---
 
-### 2.5 `sqlshell-app`
+### 2.6 `sqlshell-app`
 
 Scopo:
 - entry point di startup
@@ -160,11 +185,13 @@ sqlshell-app
   -> sqlshell-jdbc
   -> sqlshell-dialects
   -> sqlshell-core
+  -> sqlshell-kernel
 
 sqlshell-tui-jexer
   -> sqlshell-jdbc
   -> sqlshell-dialects
   -> sqlshell-core
+  -> sqlshell-kernel
 
 sqlshell-jdbc
   -> sqlshell-core
@@ -173,6 +200,9 @@ sqlshell-dialects
   -> sqlshell-core
 
 sqlshell-core
+  -> (nessun modulo locale)
+
+sqlshell-kernel
   -> (nessun modulo locale)
 ```
 
@@ -327,6 +357,7 @@ Ordine moduli suggerito:
 
 ```xml
 <modules>
+    <module>sqlshell-kernel</module>
     <module>sqlshell-core</module>
     <module>sqlshell-jdbc</module>
     <module>sqlshell-dialects</module>

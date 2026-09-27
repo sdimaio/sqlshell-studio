@@ -16,6 +16,11 @@
     <dependencies>
         <dependency>
             <groupId>com.sdimaio</groupId>
+            <artifactId>sqlshell-kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sdimaio</groupId>
             <artifactId>sqlshell-core</artifactId>
             <version>${project.version}</version>
         </dependency>

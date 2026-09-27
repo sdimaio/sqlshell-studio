@@ -2,6 +2,7 @@ package com.sdimaio.sqlshell.tui.app;
 
 import com.sdimaio.sqlshell.core.connection.ConnectionProfileRepository;
 import com.sdimaio.sqlshell.core.connection.ConnectionService;
+import com.sdimaio.sqlshell.kernel.model.system.runtime.JavaPlatform;
 import com.sdimaio.sqlshell.tui.windows.MainWorkbenchWindow;
 import jexer.TApplication;
 
@@ -54,11 +55,14 @@ public final class SqlShellStudioTui extends TApplication {
      * @return backend selection for the current runtime.
      */
     private static BackendType selectBackend() {
+        JavaPlatform platform = JavaPlatform.current();
         BackendType backendType = BackendType.XTERM;
-        String os = System.getProperty("os.name", "");
-        if (os.startsWith("Windows") || os.startsWith("Mac")) {
+
+        if (platform.operatingSystem().type() == com.sdimaio.sqlshell.kernel.model.system.os.OperatingSystemType.WINDOWS
+            || platform.operatingSystem().type() == com.sdimaio.sqlshell.kernel.model.system.os.OperatingSystemType.MACOS) {
             backendType = BackendType.SWING;
         }
+
         if (System.getProperty("jexer.Swing") != null) {
             if (System.getProperty("jexer.Swing", "false").equals("true")) {
                 backendType = BackendType.SWING;

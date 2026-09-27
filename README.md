@@ -39,6 +39,21 @@ See:
 See:
 - `docs/design/README.md`
 
-## Build Note
+## Build and Bootstrap Notes
 
 The repository is intentionally pinned to **Java 25**. Building it with older JDKs will fail by design.
+
+Useful commands:
+
+```bash
+./build.sh
+./verify.sh
+./bin/test-java25-env.sh
+./bin/start-dev.sh
+```
+
+The application now includes a small professional bootstrap layer that:
+
+- detects the current runtime platform
+- prints a startup diagnostics banner
+- refuses to start on runtimes older than Java 25

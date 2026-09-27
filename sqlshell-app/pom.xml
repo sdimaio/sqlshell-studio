@@ -16,6 +16,11 @@
     <dependencies>
         <dependency>
             <groupId>com.sdimaio</groupId>
+            <artifactId>sqlshell-kernel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sdimaio</groupId>
             <artifactId>sqlshell-core</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -52,6 +57,13 @@
                             <mainClass>com.sdimaio.sqlshell.app.Main</mainClass>
                         </manifest>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.sdimaio.sqlshell.app.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
