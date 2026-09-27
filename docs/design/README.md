@@ -7,6 +7,7 @@ This folder contains reusable engineering and delivery standards derived from th
 
 ## English
 
+- `en/DB_TUI_ARCHITECTURE.md`
 - `en/DELIVERY_STYLE_COMPARATIVE_STUDY.md`
 - `en/DELIVERY_STYLE_STANDARD.md`
 - `en/JAVA25_MULTIMODULE_DELIVERY_BLUEPRINT.md`
@@ -14,12 +15,15 @@ This folder contains reusable engineering and delivery standards derived from th
 
 ## Italiano
 
+- `it/DB_TUI_ARCHITECTURE.md`
 - `it/DELIVERY_STYLE_COMPARATIVE_STUDY.md`
 - `it/DELIVERY_STYLE_STANDARD.md`
 - `it/JAVA25_MULTIMODULE_DELIVERY_BLUEPRINT.md`
 - `it/BRANCHING_AND_RELEASE_MODEL.md`
 
 ## Intent
+
+This folder also contains the core product and architecture direction for SQLShell Studio.
 
 These documents are meant to capture and formalize a delivery style that emphasizes:
 
