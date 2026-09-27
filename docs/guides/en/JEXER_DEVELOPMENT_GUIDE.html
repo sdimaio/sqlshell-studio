@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jexer Development Guide</title>
+  <style>
+    :root { --bg:#f7f7fb; --paper:#fff; --ink:#1f2430; --muted:#5b6475; --blue:#2248aa; --blue2:#16327b; --line:#d6dbe7; --codebg:#0f172a; --codefg:#e5eefc; --accent:#eef3ff; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font-family:Georgia,"Times New Roman",serif; line-height:1.6; }
+    .layout { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:290px 1fr; gap:24px; padding:24px; }
+    nav { position:sticky; top:16px; align-self:start; background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:18px; }
+    nav h2 { margin-top:0; color:var(--blue2); }
+    nav ul { list-style:none; padding-left:0; margin:0; }
+    nav li { margin:.45rem 0; }
+    nav a { color:var(--blue); text-decoration:none; }
+    nav a:hover { text-decoration:underline; }
+    main { background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:42px 52px; }
+    .frontpage { border-bottom:3px solid var(--blue); margin-bottom:28px; padding-bottom:22px; }
+    .frontpage h1 { margin:0; font-size:2.4rem; color:var(--blue2); line-height:1.15; }
+    .subtitle { margin-top:10px; font-size:1.15rem; color:var(--muted); }
+    .meta { margin-top:18px; padding:12px 14px; background:var(--accent); border-left:4px solid var(--blue); color:var(--muted); font-size:.96rem; }
+    h2 { margin-top:2.2rem; color:var(--blue2); border-bottom:1px solid var(--line); padding-bottom:.25rem; }
+    h3 { color:var(--blue2); margin-top:1.5rem; }
+    pre { background:var(--codebg); color:var(--codefg); padding:16px; border-radius:10px; overflow:auto; font-size:.92rem; }
+    .note { background:#fff9e8; border-left:4px solid #d5a100; padding:10px 12px; margin:14px 0; }
+    .toplink { text-align:right; margin-top:12px; font-size:.92rem; }
+    .toplink a { color:var(--blue); text-decoration:none; }
+    @media (max-width:960px){ .layout{grid-template-columns:1fr;} nav{position:static;} main{padding:28px 22px;} }
+  </style>
+</head>
+<body>
+  <div class="layout" id="top">
+    <nav>
+      <h2>Contents</h2>
+      <ul>
+        <li><a href="#preface">Preface</a></li>
+        <li><a href="#c1">1. What Jexer Is</a></li>
+        <li><a href="#c2">2. Mental Model</a></li>
+        <li><a href="#c3">3. Project Setup</a></li>
+        <li><a href="#c4">4. First Application</a></li>
+        <li><a href="#c5">5. Anatomy of a Jexer App</a></li>
+        <li><a href="#c6">6. Windows</a></li>
+        <li><a href="#c7">7. Standard Widgets</a></li>
+        <li><a href="#c8">8. Menus, Shortcuts, and Status Bar</a></li>
+        <li><a href="#c9">9. Dialog Boxes</a></li>
+        <li><a href="#c10">10. Events</a></li>
+        <li><a href="#c11">11. Data and Application State</a></li>
+        <li><a href="#c12">12. Validation</a></li>
+        <li><a href="#c13">13. Layout and Resize</a></li>
+        <li><a href="#c14">14. Custom Widgets</a></li>
+        <li><a href="#c15">15. Colors and Visual Theme</a></li>
+        <li><a href="#c16">16. Long Tasks and Concurrency</a></li>
+        <li><a href="#c17">17. Recommended Architectures</a></li>
+        <li><a href="#c18">18. Example Application</a></li>
+        <li><a href="#c19">19. Turbo Vision → Jexer Map</a></li>
+        <li><a href="#c20">20. Final Checklist</a></li>
+      </ul>
+    </nav>
+    <main>
+      <section class="frontpage">
+        <h1>Jexer Development Guide</h1>
+        <div class="subtitle">Practical manual for building TUI applications in Java with Jexer</div>
+        <div class="subtitle">Teaching style inspired by classic Borland Turbo Vision manuals</div>
+        <div class="meta">
+          Working version: 1.2<br>
+          Reference repository: https://codeberg.org/AutumnMeowMeow/jexer<br>
+          Companion documents: JEXER_COMPONENT_REFERENCE.md, JEXER_COOKBOOK.md<br>
+          Examples follow the Jexer 2.0 API as read from the reference repository.
+        </div>
+      </section>
+
+      <h2 id="preface">Preface</h2>
+      <p>Jexer is a Java library for building rich text user interfaces inside a terminal. This guide is meant to teach how to structure real applications, not just list classes.</p>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c1">1. What Jexer Is</h2>
+      <p>Jexer is a TUI library with windows, focus, keyboard and mouse events, and redraw management. It is useful for dashboards, data browsers, internal tools, and terminal-native utilities.</p>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c2">2. Mental Model</h2>
+      <ul>
+        <li><strong>TApplication</strong>: the application</li>
+        <li><strong>TWindow</strong>: a window</li>
+        <li><strong>Widget</strong>: a control</li>
+        <li><strong>Events</strong>: keyboard and mouse input</li>
+        <li><strong>Model/Service</strong>: logic outside the UI</li>
+      </ul>
+      <p>The UI should not be the data model.</p>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c3">3. Project Setup</h2>
+      <pre><code>src/main/java/
+  app/
+    Main.java
+    ui/
+      MainApp.java
+      windows/
+      dialogs/
+      widgets/
+    model/
+    service/
+    controller/</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c4">4. First Application</h2>
+      <pre><code>package app;
+
+import jexer.TAction;
+import jexer.TApplication;
+import jexer.TWindow;
+import jexer.backend.BackendType;
+
+public class HelloApp extends TApplication {
+
+    public HelloApp() throws Exception {
+        super(BackendType.XTERM);
+
+        final TWindow window = addWindow("Hello Jexer", 2, 2, 50, 12);
+        window.addLabel("Welcome to Jexer", 2, 2);
+        window.addLabel("This is a real TUI window.", 2, 3);
+        window.addButton("Exit", 2, 5, new TAction() {
+            @Override
+            public void DO() {
+                exit();
+            }
+        });
+    }
+
+    public static void main(String[] args) throws Exception {
+        new HelloApp().run();
+    }
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c5">5. Anatomy of a Jexer App</h2>
+      <p>A serious Jexer app has at least three layers: UI, logic, and data.</p>
+      <pre><code>public class Customer {
+    private String name;
+    private String email;
+}
+
+public class CustomerService {
+    public void save(Customer customer) {
+        // persistence logic
+    }
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c6">6. Windows</h2>
+      <pre><code>TWindow customerWindow = addWindow("Customers", 1, 1, 70, 20);</code></pre>
+      <pre><code>public class AboutWindow extends TWindow {
+    public AboutWindow(TApplication app) {
+        super(app, "About", 5, 3, 40, 10);
+        addLabel("Demo application in Jexer", 2, 2);
+    }
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c7">7. Standard Widgets</h2>
+      <ul>
+        <li>Label</li>
+        <li>Button</li>
+        <li>Field / input</li>
+        <li>Checkbox</li>
+        <li>Radio group</li>
+        <li>List widget</li>
+        <li>Text area / editor</li>
+      </ul>
+      <pre><code>window.addLabel("Name:", 2, 2);
+window.addLabel("Email:", 2, 4);
+nameField = window.addField(15, 2, 30, false);
+emailField = window.addField(15, 4, 30, false);</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c8">8. Menus, Shortcuts, and Status Bar</h2>
+      <ul>
+        <li>Alt+X or Ctrl+Q: exit</li>
+        <li>F1: help</li>
+        <li>F2: save</li>
+        <li>F10: menu</li>
+      </ul>
+      <pre><code>addFileMenu();
+addEditMenu();
+addWindowMenu();
+addHelpMenu();</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c9">9. Dialog Boxes</h2>
+      <p>Use dialogs for confirmations, short input, and important messages.</p>
+      <pre><code>boolean confirmed = askToDelete();
+if (confirmed) {
+    deleteSelected();
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c10">10. Events</h2>
+      <pre><code>window.addButton("Save", 2, 10, new TAction() {
+    @Override
+    public void DO() {
+        onSave();
+    }
+});
+
+private void onSave() {
+    Customer customer = readForm();
+    validate(customer);
+    service.save(customer);
+    showSavedMessage();
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c11">11. Data and Application State</h2>
+      <pre><code>private Customer readForm() {
+    Customer c = new Customer();
+    c.setName(nameField.getText());
+    c.setEmail(emailField.getText());
+    return c;
+}
+
+private void writeForm(Customer c) {
+    nameField.setText(c.getName());
+    emailField.setText(c.getEmail());
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c12">12. Validation</h2>
+      <pre><code>private void validate(Customer c) {
+    if (c.getName() == null || c.getName().isBlank()) {
+        throw new IllegalArgumentException("Name is required");
+    }
+    if (c.getEmail() == null || !c.getEmail().contains("@")) {
+        throw new IllegalArgumentException("Invalid email");
+    }
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c13">13. Layout and Resize</h2>
+      <ul>
+        <li>consistent margins</li>
+        <li>clear alignment</li>
+        <li>minimum supported size</li>
+        <li>reasonable resize behavior</li>
+      </ul>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c14">14. Custom Widgets</h2>
+      <pre><code>public class StatusPanel extends TWidget {
+    private String title = "";
+    private String value = "";
+
+    public StatusPanel(TWindow parent, int x, int y, int width) {
+        super(parent, x, y, width, 3);
+    }
+
+    public void setTitle(String title) { this.title = title; }
+    public void setValue(String value) { this.value = value; }
+
+    @Override
+    public void draw() {
+        putStringXY(0, 0, "+------------------+");
+        putStringXY(0, 1, "| " + title + ": " + value);
+        putStringXY(0, 2, "+------------------+");
+    }
+}</code></pre>
+      <div class="note">Drawing primitives may vary slightly by version. The pattern is what matters: small state, clear setters, rendering separated from business logic.</div>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c15">15. Colors and Visual Theme</h2>
+      <p>Use color for focus, selection, error, and hierarchy. Avoid poor contrast and inconsistent meaning.</p>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c16">16. Long Tasks and Concurrency</h2>
+      <p>Never block the UI thread for long-running operations. Use background work and visible progress feedback.</p>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c17">17. Recommended Architectures</h2>
+      <p>A lightweight MV-style split usually works well:</p>
+      <ul>
+        <li>Model: data</li>
+        <li>View: Jexer UI</li>
+        <li>Controller/Presenter: events and services</li>
+      </ul>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c18">18. Example Application</h2>
+      <pre><code>package app.model;
+
+public class Note {
+    private String title;
+    private String body;
+}</code></pre>
+      <pre><code>package app.service;
+
+public class NoteService {
+    // list, add, remove
+}</code></pre>
+      <pre><code>package app;
+
+public class MainApp extends TApplication {
+    public MainApp() throws Exception {
+        super(BackendType.XTERM);
+        NoteService service = new NoteService();
+        new MainWindow(this, service);
+    }
+}</code></pre>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c19">19. Turbo Vision → Jexer Map</h2>
+      <p>Jexer is not a 1:1 Turbo Vision clone, but the spirit is similar: TApplication, TWindow, dialog, status bar, menu bar, input field, button, list widget, event dispatch, and custom drawing.</p>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+
+      <h2 id="c20">20. Final Checklist</h2>
+      <ul>
+        <li>UI separated from logic and services</li>
+        <li>small callbacks</li>
+        <li>keyboard-first workflow</li>
+        <li>validation present</li>
+        <li>resize tolerated</li>
+        <li>clear layout and coherent colors</li>
+      </ul>
+      <div class="toplink"><a href="#top">Back to top</a></div>
+    </main>
+  </div>
+</body>
+</html>
