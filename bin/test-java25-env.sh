@@ -12,5 +12,5 @@ fi
 
 "${JAVA_BIN}" -version
 if [[ -n "${MVN_BIN}" ]]; then
-  "${MVN_BIN}" -version | sed -n '1,6p'
+  JAVA_HOME="$(cd "$(dirname "${JAVA_BIN}")/.." && pwd)" PATH="$(dirname "${JAVA_BIN}"):${PATH}" "${MVN_BIN}" -version | sed -n '1,6p'
 fi

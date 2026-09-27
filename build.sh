@@ -15,20 +15,50 @@ fail() {
   exit 1
 }
 
-select_java_home() {
-  if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]]; then
-    echo "${JAVA_HOME}"
+java_major_of() {
+  local java_bin="$1"
+  local raw major
+
+  raw="$(${java_bin} -version 2>&1 | awk -F '"' '/version/ {print $2; exit}')"
+  if [[ -z "${raw}" ]]; then
+    echo ""
     return 0
   fi
 
+  if [[ "${raw}" == 1.* ]]; then
+    major="${raw#1.}"
+    major="${major%%.*}"
+  else
+    major="${raw%%.*}"
+  fi
+
+  echo "${major}"
+}
+
+select_java_home() {
+  local candidate major
+
+  if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]]; then
+    major="$(java_major_of "${JAVA_HOME}/bin/java")"
+    if [[ "${major}" == "${REQUIRED_JAVA_MAJOR}" ]]; then
+      echo "${JAVA_HOME}"
+      return 0
+    fi
+    log "Ignoring JAVA_HOME=${JAVA_HOME} because it points to Java ${major:-unknown}, not Java ${REQUIRED_JAVA_MAJOR}."
+  fi
+
   if [[ -x "${DEFAULT_JAVA_HOME}/bin/java" ]]; then
-    echo "${DEFAULT_JAVA_HOME}"
-    return 0
+    major="$(java_major_of "${DEFAULT_JAVA_HOME}/bin/java")"
+    if [[ "${major}" == "${REQUIRED_JAVA_MAJOR}" ]]; then
+      echo "${DEFAULT_JAVA_HOME}"
+      return 0
+    fi
   fi
 
   for candidate in /usr/lib/jvm/* /usr/local/java/* /opt/java/*; do
     if [[ -x "${candidate}/bin/java" ]]; then
-      if "${candidate}/bin/java" -version 2>&1 | grep -q 'version "25'; then
+      major="$(java_major_of "${candidate}/bin/java")"
+      if [[ "${major}" == "${REQUIRED_JAVA_MAJOR}" ]]; then
         echo "${candidate}"
         return 0
       fi
@@ -38,12 +68,12 @@ select_java_home() {
   return 1
 }
 
-JAVA_HOME="$(select_java_home)" || fail "Unable to locate a Java 25 installation."
+JAVA_HOME="$(select_java_home)" || fail "Unable to locate a Java ${REQUIRED_JAVA_MAJOR} installation."
 export JAVA_HOME
 export PATH="${JAVA_HOME}/bin:${PATH}"
 hash -r
 
-JAVA_MAJOR="$(java -version 2>&1 | sed -n 's/.*version "\([0-9][0-9]*\).*/\1/p' | head -1)"
+JAVA_MAJOR="$(java_major_of "${JAVA_HOME}/bin/java")"
 if [[ "${JAVA_MAJOR}" != "${REQUIRED_JAVA_MAJOR}" ]]; then
   fail "Detected Java ${JAVA_MAJOR:-unknown}, but Java ${REQUIRED_JAVA_MAJOR} is required."
 fi
@@ -52,4 +82,8 @@ log "Using JAVA_HOME=${JAVA_HOME}"
 log "Running Maven build"
 
 cd "${SCRIPT_DIR}"
-mvn clean install "$@"
+if [[ -x "${SCRIPT_DIR}/mvnw" ]]; then
+  ./mvnw clean install "$@"
+else
+  mvn clean install "$@"
+fi
