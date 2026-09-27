@@ -8,6 +8,8 @@ This folder contains reusable engineering and delivery standards derived from th
 ## English
 
 - `en/DB_TUI_ARCHITECTURE.md`
+- `en/PRODUCT_ROADMAP.md`
+- `en/MODULE_LAYOUT.md`
 - `en/DELIVERY_STYLE_COMPARATIVE_STUDY.md`
 - `en/DELIVERY_STYLE_STANDARD.md`
 - `en/JAVA25_MULTIMODULE_DELIVERY_BLUEPRINT.md`
@@ -16,6 +18,8 @@ This folder contains reusable engineering and delivery standards derived from th
 ## Italiano
 
 - `it/DB_TUI_ARCHITECTURE.md`
+- `it/PRODUCT_ROADMAP.md`
+- `it/MODULE_LAYOUT.md`
 - `it/DELIVERY_STYLE_COMPARATIVE_STUDY.md`
 - `it/DELIVERY_STYLE_STANDARD.md`
 - `it/JAVA25_MULTIMODULE_DELIVERY_BLUEPRINT.md`
