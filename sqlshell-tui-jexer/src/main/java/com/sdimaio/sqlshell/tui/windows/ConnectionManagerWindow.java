@@ -32,6 +32,15 @@ import java.util.UUID;
 public final class ConnectionManagerWindow extends TWindow {
 
     /**
+     * Small immutable pair of suggested JDBC URL and driver class.
+     *
+     * <p>Keeping templates explicit and typed avoids scattering parallel maps
+     * or switch statements across the window implementation.
+     */
+    private record ConnectionTemplate(String jdbcUrl, String driverClass) {
+    }
+
+    /**
      * Repository for persisted connection profiles.
      */
     private final ConnectionProfileRepository profileRepository;
@@ -129,7 +138,7 @@ public final class ConnectionManagerWindow extends TWindow {
             new TAction() {
                 @Override
                 public void DO() {
-                    // No-op in V1; kept as an explicit hook for future presets.
+                    applyTemplateForSelectedDatabaseType();
                 }
             }
         );
@@ -143,6 +152,7 @@ public final class ConnectionManagerWindow extends TWindow {
             @Override
             public void DO() {
                 clearEditorFields();
+                applyTemplateForSelectedDatabaseType();
             }
         });
         addButton("Save", 40, 18, new TAction() {
@@ -171,8 +181,12 @@ public final class ConnectionManagerWindow extends TWindow {
         });
 
         refreshProfileList();
+        if (profiles.isEmpty()) {
+            clearEditorFields();
+            applyTemplate(DatabaseType.POSTGRESQL);
+        }
         activate(profileList);
-        statusBar = newStatusBar("Connections - save, reload, and validate JDBC profiles");
+        statusBar = newStatusBar("Connections - save, reload, validate profiles, and preload JDBC templates");
     }
 
     /**
@@ -239,6 +253,62 @@ public final class ConnectionManagerWindow extends TWindow {
         usernameField.setText("");
         passwordField.setText("");
         schemaField.setText("");
+    }
+
+    /**
+     * Applies a JDBC template matching the currently selected database type.
+     *
+     * <p>Preloading a sensible URL and driver class makes the first-run
+     * experience dramatically better. JDBC URLs are easy to mistype, and a TUI
+     * should reduce cognitive burden rather than force the operator to recall
+     * boilerplate from memory.
+     */
+    private void applyTemplateForSelectedDatabaseType() {
+        applyTemplate(DatabaseType.valueOf(databaseTypeBox.getText().trim().toUpperCase()));
+    }
+
+    /**
+     * Applies the suggested JDBC URL and driver class for a database family.
+     *
+     * @param databaseType selected database family.
+     */
+    private void applyTemplate(final DatabaseType databaseType) {
+        ConnectionTemplate template = templateFor(databaseType);
+        jdbcUrlField.setText(template.jdbcUrl());
+        driverClassField.setText(template.driverClass());
+    }
+
+    /**
+     * Resolves the template associated with a database family.
+     *
+     * <p>The initial set focuses on the families already declared in the core
+     * model. Even when a dialect is not fully implemented yet, a reasonable
+     * connection template improves discoverability and lowers setup friction.
+     *
+     * @param databaseType selected database family.
+     * @return suggested JDBC template.
+     */
+    private ConnectionTemplate templateFor(final DatabaseType databaseType) {
+        return switch (databaseType) {
+            case ORACLE -> new ConnectionTemplate(
+                "jdbc:oracle:thin:@//localhost:1521/FREEPDB1",
+                "oracle.jdbc.OracleDriver");
+            case POSTGRESQL -> new ConnectionTemplate(
+                "jdbc:postgresql://localhost:5432/postgres",
+                "org.postgresql.Driver");
+            case MYSQL -> new ConnectionTemplate(
+                "jdbc:mysql://localhost:3306/mysql",
+                "com.mysql.cj.jdbc.Driver");
+            case SQLSERVER -> new ConnectionTemplate(
+                "jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true",
+                "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            case SQLITE -> new ConnectionTemplate(
+                "jdbc:sqlite:/tmp/sqlshell-studio.db",
+                "org.sqlite.JDBC");
+            case OTHER -> new ConnectionTemplate(
+                "jdbc:vendor://host:port/database",
+                "com.vendor.jdbc.Driver");
+        };
     }
 
     /**
